@@ -3,6 +3,7 @@ package datastructures.worklists;
 import egr221a.exceptions.NotYetImplementedException;
 import egr221a.interfaces.worklists.FixedSizeFIFOWorkList;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
@@ -72,14 +73,20 @@ public class CircularArrayFIFOQueue<E> extends FixedSizeFIFOWorkList<E> {
 
     @Override
     public int compareTo(FixedSizeFIFOWorkList<E> other) {
-        // You will implement this method in p2. Leave this method unchanged for p1.
-        throw new NotYetImplementedException();
+        // You will implement this method in p2. Leave this method unchanged for p1. - DONE
+        if (this.size() < other.size()) {
+            return -1;
+        } else if (this.size() > other.size()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
-        // You will finish implementing this method in p2. Leave this method unchanged for p1.
+        // You will finish implementing this method in p2. Leave this method unchanged for p1. - DONE
         if (this == obj) {
             return true;
         }
@@ -89,15 +96,28 @@ public class CircularArrayFIFOQueue<E> extends FixedSizeFIFOWorkList<E> {
         else {
             FixedSizeFIFOWorkList<E> other = (FixedSizeFIFOWorkList<E>) obj;
 
-            // Your code goes here
-
-            throw new NotYetImplementedException();
+            // Your code goes here - DONE
+            if (size() != other.size()) {
+                return false;
+            } else {
+                for (int i = 0; i < size(); i++) {
+                    if (!peek(i).equals(other.peek(i))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 
     @Override
     public int hashCode() {
-        // You will implement this method in p2. Leave this method unchanged for p1.
-        throw new NotYetImplementedException();
+        // You will implement this method in p2. Leave this method unchanged for p1. - DONE
+        int result = 1;
+        result = result * 31 + Arrays.hashCode(array);
+        result = result * 31 + front;
+        result = result * 31 + back;
+        result = result * 31 + size;
+        return result;
     }
 }
