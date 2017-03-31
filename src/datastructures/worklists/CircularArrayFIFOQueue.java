@@ -73,20 +73,14 @@ public class CircularArrayFIFOQueue<E> extends FixedSizeFIFOWorkList<E> {
 
     @Override
     public int compareTo(FixedSizeFIFOWorkList<E> other) {
-        // You will implement this method in p2. Leave this method unchanged for p1. - DONE
-        if (this.size() < other.size()) {
-            return -1;
-        } else if (this.size() > other.size()) {
-            return 1;
-        } else {
-            return 0;
-        }
+        // You will implement this method in p2. Leave this method unchanged for p1.
+        throw new NotYetImplementedException();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
-        // You will finish implementing this method in p2. Leave this method unchanged for p1. - DONE
+        // You will finish implementing this method in p2. Leave this method unchanged for p1.
         if (this == obj) {
             return true;
         }
@@ -96,28 +90,15 @@ public class CircularArrayFIFOQueue<E> extends FixedSizeFIFOWorkList<E> {
         else {
             FixedSizeFIFOWorkList<E> other = (FixedSizeFIFOWorkList<E>) obj;
 
-            // Your code goes here - DONE
-            if (size() != other.size()) {
-                return false;
-            } else {
-                for (int i = 0; i < size(); i++) {
-                    if (!peek(i).equals(other.peek(i))) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            // Your code goes here
+
+            throw new NotYetImplementedException();
         }
     }
 
     @Override
     public int hashCode() {
-        // You will implement this method in p2. Leave this method unchanged for p1. - DONE
-        int result = 1;
-        result = result * 31 + Arrays.hashCode(array);
-        result = result * 31 + front;
-        result = result * 31 + back;
-        result = result * 31 + size;
-        return result;
+        // You will implement this method in p2. Leave this method unchanged for p1.
+        throw new NotYetImplementedException();
     }
 }
