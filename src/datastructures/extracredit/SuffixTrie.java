@@ -1,10 +1,11 @@
 package datastructures.extracredit;
 
-import egr221a.exceptions.NotYetImplementedException;
+import datastructures.dictionaries.HashTrieMap;
+import datastructures.worklists.CircularArrayFIFOQueue;
+import datastructures.worklists.ListFIFOQueue;
 import egr221a.interfaces.worklists.FIFOWorkList;
 import egr221a.interfaces.worklists.FixedSizeFIFOWorkList;
 import egr221a.types.ByteString;
-import datastructures.dictionaries.HashTrieMap;
 
 public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
     protected static final Byte TERMINATOR = null;
@@ -12,7 +13,10 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
     /* Here are some fields you will need to start you off. You might need others... */
     private FixedSizeFIFOWorkList<Byte> currentMatch;
     private FIFOWorkList<HashTrieNode> leaves;
-    private HashTrieNode lastMatchedNode;
+    private HashTrieNode lastMatch;
+    private FixedSizeFIFOWorkList<Byte> contents;
+    private int size;
+    private int maxMatchLength;
 
     /**
      * A new SuffixTrie is constructed with an internal buffer of size size and a
@@ -25,7 +29,12 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
     public SuffixTrie(int size, int maxMatchLength) {
         super(ByteString.class);
 
-        throw new NotYetImplementedException();
+        if(maxMatchLength < 0) {
+            throw new IllegalArgumentException();
+        }
+        this.size = size;
+        this.maxMatchLength = maxMatchLength;
+        clear();
     }
 
     /**
@@ -36,7 +45,7 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
      * @postcondition currentMatch == suffix for the longest possible _partial_
      *                suffix in the trie
      * @postcondition the node representing the last matched character in the trie
-     *                is stored in this.lastMatchedNode (we might need this later)
+     *                is stored in this.lastMatch (we might need this later)
      *
      * Note that this method is not guaranteed to find a complete match -- it may,
      * in some cases, make a partial match.
@@ -55,16 +64,38 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
      * If you find a COMPLETE match, you should return the total number of bytes you've
      * matched against the buffer. Otherwise, you should return zero.
      *
-     * When implementing this method, you should start by resetting this.lastMatchedNode,
+     * When implementing this method, you should start by resetting this.lastMatch,
      * then start traversing from the root of the trie to try finding the new match. You
-     * should not traverse starting from the old value of this.lastMatchedNode.  Make sure
-     * to update this.lastMatchedNode after finishing traversing.
+     * should not traverse starting from the old value of this.lastMatch.  Make sure
+     * to update this.lastMatch after finishing traversing.
      * 
      * @param buffer the buffer to search with 
      * @return the total number of bytes matched
      */
     public int startNewMatch(FIFOWorkList<Byte> buffer) {
-        throw new NotYetImplementedException();
+        HashTrieNode current = (HashTrieNode)this.root;
+        currentMatch.clear();
+        lastMatch = current;
+        while(buffer.hasWork()) {
+            Byte b = buffer.peek();
+            if(current.pointers.containsKey(b)) {
+                current = current.pointers.get(b);
+                currentMatch.add(b);
+                buffer.next();
+            } else {
+                lastMatch = current;
+                if(current.pointers.containsKey(TERMINATOR)) {
+                    return currentMatch.size();
+                } else {
+                    return 0;
+                }
+            }
+        }
+        if(current.pointers.containsKey(TERMINATOR)) {
+            return currentMatch.size();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -118,7 +149,7 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
 
     /**
      * Adds the given byte to this.currentMatch. This method should
-     * NOT change this.lastMatchedNode.
+     * NOT change this.lastMatch.
      *
      * If the client tries adding a byte after this.currentMatch is full,
      * you should do nothing.
@@ -126,7 +157,9 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
      * @param b the byte to add
      */
     public void addToMatch(byte b) {
-        throw new NotYetImplementedException();
+        if(!currentMatch.isFull()) {
+            currentMatch.add(b);
+        }
     }
 
     /**
@@ -137,17 +170,28 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
      * @return a copy of the current match
      */
     public FIFOWorkList<Byte> getMatch() {
-        throw new NotYetImplementedException();
+        FIFOWorkList<Byte> result = new CircularArrayFIFOQueue<Byte>(maxMatchLength);
+        for(Byte b: currentMatch) {
+            result.add(b);
+        }
+        return result;
     }
 
     /**
      * Returns the distance from the end of the current match to some leaf
      *
-     * @return the number of (non-terminator) characters between lastMatchedNode and the
+     * @return the number of (non-terminator) characters between lastMatch and the
      *         closest leaf on an arbitrary path
      */
     public int getDistanceToLeaf() {
-        throw new NotYetImplementedException();
+        int distance = 0;
+        HashTrieNode current = lastMatch;
+        while(!current.pointers.containsKey(TERMINATOR)) {
+            current = current.pointers.values().iterator().next();
+
+            distance++;
+        }
+        return distance;
     }
 
     /**
@@ -165,7 +209,37 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
      * example and descriptions in the spec for more details about this method.
      */
     public void advance() {
-        throw new NotYetImplementedException();
+        if (currentMatch.size() >= size && size > maxMatchLength) {
+            contents.clear();
+            for (int i = 0; i < size; i++) {
+                contents.add(currentMatch.peek(currentMatch.size() - (size - i)));
+            }
+            currentMatch.clear();
+            for (Byte content: contents) {
+                currentMatch.add(content);
+            }
+            contents.clear();
+            advance();
+        } else {
+            clear();
+            while (currentMatch.hasWork()) {
+                if(contents.isFull()) {
+                    ByteString newContents = new ByteString(contents);
+                    delete(newContents);
+                    contents.next();
+                }
+                Byte b = currentMatch.next();
+                contents.add(b);
+                FIFOWorkList<HashTrieNode> newLeaves = new ListFIFOQueue<HashTrieNode>();
+                for (HashTrieNode leaf: leaves) {
+                    leaf.pointers.clear();
+                    leaf.pointers.put(b, new HashTrieNode());
+                    leaf = leaf.pointers.get(b);
+                    leaf.pointers.put(TERMINATOR, new HashTrieNode(true));
+                    newLeaves.add(leaf);
+                }
+            }
+        }
     }
 
     /**
@@ -173,6 +247,13 @@ public class SuffixTrie extends HashTrieMap<Byte, ByteString, Boolean> {
      */
     @Override
     public void clear() {
-        throw new NotYetImplementedException();
+        root = new HashTrieNode();
+        HashTrieNode hashTrieNode = (HashTrieNode)this.root;
+        lastMatch = hashTrieNode;
+        lastMatch.pointers.put(TERMINATOR, new HashTrieNode(true));
+        currentMatch = new CircularArrayFIFOQueue<Byte>(maxMatchLength);
+        contents = new CircularArrayFIFOQueue<Byte>(size);
+        leaves = new ListFIFOQueue<HashTrieNode>();
+        leaves.add(lastMatch);
     }
 }

@@ -70,7 +70,12 @@ public Node getNode(String s) {
     standard zip utility on your machine (Finder on OS X, zip on Linux, WinZip or the like on Windows) to UNZIP your file.  Check that you got back
     the original.  Congratulations!  Your program correctly implements the same compression algorithm you have been using for years!  Discuss in a
     sentence or two how good the compression was and why you think it was good or bad.<pre>
-**TODO**: Answer this question
+We decided to zip a .html page. After unzipping the compressed zip, it was
+the same size as the original .html. The compression was right-on accurate.
+We think this is good because the original size of the .html file was
+443 KB. When zipped, it was 225 KB. When unzipped, it was back to 443 KB.
+When we tried the provided test.txt, we did a DiffCheck and the files were
+the same.
 </pre><br>
 -   Now that you've played with Zip, we want you to do an **experiment** with Zip.  Notice that there is a constant called `BUFFER_LENGTH` in `Zip.java`.
     Higher values of this constant makes the compression algorithm that Zip uses use more memory and consequently more time.  The "compression ratio"
@@ -79,7 +84,16 @@ public Node getNode(String s) {
     and some other input of your choice.  We expect you to draw meaningful conclusions and possibly have graphs that convince us of your conclusions.
     This single question is worth almost as much as the implementation of `ArrayStack`; so, please take it seriously.  If you spend less than 20 minutes
     on this question, there is no conceivable way that you answered this question in the way we were intending.<pre>
-**TODO**: Answer this question
+We used a .html file from the homepage of redsox.com for one file. The other
+file we used was a .txt file from gutenberg.org. The third file we used
+was the .pdf file of the spec for this project. We conducted three different
+tests for each file. The buffer length was changed each time from 200 to 
+5000 to 10000. We noticed that the bigger the file, the larger the time
+was. This was especially noticable when the buffer length was increased.
+You can see on the three graphs time vs. the buffered length. The tables
+to the left of the graphs give exact values of the time and buffer length.
+The times were calculated by using the stopwatch on an iPhone and timing
+the runtimes. As a result, there may be a small error in the time.
 </pre><br>
 
 #### Above and Beyond ####

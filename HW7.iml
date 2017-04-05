@@ -18,5 +18,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="SuffixTrie" level="project" />
+    <orderEntry type="library" name="SuffixTrie (2)" level="project" />
   </component>
 </module>
