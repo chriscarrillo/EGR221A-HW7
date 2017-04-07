@@ -1,13 +1,12 @@
 package datastructures.dictionaries;
 
+import egr221a.interfaces.trie.BString;
+import egr221a.interfaces.trie.TrieMap;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import egr221a.exceptions.NotYetImplementedException;
-import egr221a.interfaces.trie.BString;
-import egr221a.interfaces.trie.TrieMap;
 
 /**
  * See egr221a/interfaces/trie/TrieMap.java
@@ -66,11 +65,10 @@ public class HashTrieMap<A extends Comparable<A>, K extends BString<A>, V> exten
 
         HashTrieNode current = (HashTrieNode) this.root;
         for (A letter : key) {
-            HashTrieNode next = current.pointers.get(letter);
-            if (next == null) {
+            current = current.pointers.get(letter);
+            if (current == null) {
                 return null;
             }
-            current = next;
         }
         return current.value;
     }
@@ -80,14 +78,12 @@ public class HashTrieMap<A extends Comparable<A>, K extends BString<A>, V> exten
         if (key == null) {
             throw new IllegalArgumentException();
         }
-
         HashTrieNode current = (HashTrieNode) this.root;
         for (A letter : key) {
-            HashTrieNode next = current.pointers.get(letter);
-            if (next == null) {
+            current = current.pointers.get(letter);
+            if (current == null) {
                 return false;
             }
-            current = next;
         }
         return true;
     }
@@ -95,10 +91,9 @@ public class HashTrieMap<A extends Comparable<A>, K extends BString<A>, V> exten
     @Override
     public void delete(K key) {
         boolean validKey = true;
-        if (key == null){
-            throw new IllegalArgumentException("No key was given");
+        if (key == null) {
+            throw new IllegalArgumentException();
         }
-
         HashTrieNode current = (HashTrieNode) this.root;
         if (key.isEmpty()) {
             if (current.value != null) {
@@ -107,29 +102,29 @@ public class HashTrieMap<A extends Comparable<A>, K extends BString<A>, V> exten
             }
         } else {
             HashTrieNode previous = (HashTrieNode) this.root;
-            Iterator<A> iterator = key.iterator();
+            Iterator<A> iter = key.iterator();
 
-            A cutBranch = (A) iterator.next();
-            for (A character : key){
-                if (current.pointers.get(character) != null) {
+            A cutBranch = (A) iter.next();
+            for (A character : key) {
+   				if (current.pointers.get(character) != null) {
                     if (current.pointers.size() >= 2 || current.value != null) {
                         previous = current;
                         cutBranch = character;
                     }
                     current = current.pointers.get(character);
-                    } else {
-                        validKey = false;
-                        break;
+                } else {
+                    validKey = false;
+                    break;
                 }
-                if (validKey) {
-                    if (current.pointers.isEmpty()) {
-                        previous.pointers.get(cutBranch);
+            }
+            if (validKey) {
+                if (current.pointers.isEmpty()) {
+                    previous.pointers.remove(cutBranch);
+                    size--;
+                } else {
+                    if (current.value != null) {
+                        current.value = null;
                         size--;
-                    } else {
-                        if (current.value != null) {
-                            current.value = null;
-                            size--;
-                        }
                     }
                 }
             }

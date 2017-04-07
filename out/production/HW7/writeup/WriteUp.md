@@ -84,7 +84,16 @@ the same.
     and some other input of your choice.  We expect you to draw meaningful conclusions and possibly have graphs that convince us of your conclusions.
     This single question is worth almost as much as the implementation of `ArrayStack`; so, please take it seriously.  If you spend less than 20 minutes
     on this question, there is no conceivable way that you answered this question in the way we were intending.<pre>
-**TODO**: Answer this question
+We used a .html file from the homepage of redsox.com for one file. The other
+file we used was a .txt file from gutenberg.org. The third file we used
+was the .pdf file of the spec for this project. We conducted three different
+tests for each file. The buffer length was changed each time from 200 to 
+5000 to 10000. We noticed that the bigger the file, the larger the time
+was. This was especially noticable when the buffer length was increased.
+You can see on the three graphs time vs. the buffered length. The tables
+to the left of the graphs give exact values of the time and buffer length.
+The times were calculated by using the stopwatch on an iPhone and timing
+the runtimes. As a result, there may be a small error in the time.
 </pre><br>
 
 #### Above and Beyond ####
